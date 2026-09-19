@@ -3,35 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>Diagnóstico Galeria RA</title>
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+  <title>Galeria RA - String Art</title>
+  
+  <script src="https://aframe.io"></script>
+  <script src="https://jsdelivr.net"></script>
+
   <style>
-    body { margin: 0; overflow: hidden; background-color: #000; font-family: sans-serif; }
-    #start-btn {
-      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999;
-      padding: 14px 28px; font-size: 16px; font-weight: bold; background: #111; color: #fff;
-      border: 2px solid #fff; border-radius: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer;
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+      background-color: #000;
     }
-    #debug-log {
-      position: absolute; top: 10px; left: 10px; right: 10px; max-height: 150px;
-      background: rgba(0,0,0,0.8); color: #00ff00; padding: 10px; font-size: 12px;
-      overflow-y: auto; z-index: 99999; border-radius: 5px; pointer-events: none;
+    #start-btn {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #111;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
     }
     #ar-video-container {
-      display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 85vw; z-index: 5000; pointer-events: none;
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 85vw;
+      z-index: 5000;
+      pointer-events: none;
     }
-    #vid-quadro1 { width: 100%; height: auto; border-radius: 8px; }
+    #vid-quadro1 {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    }
   </style>
 </head>
 <body>
 
-  <div id="debug-log">Painel de Diagnóstico:<br>Aguardando clique...</div>
-  <button id="start-btn">Iniciar Teste de Câmara</button>
+  <button id="start-btn">Toque para Iniciar Experiência</button>
 
   <div id="ar-video-container">
-    <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
+    <!-- Som ativado (Removido o atributo 'muted') -->
+    <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous"></video>
   </div>
 
   <a-scene 
@@ -40,8 +63,10 @@
     renderer="colorManagement: true, physicallyCorrectLights: true" 
     vr-mode-ui="enabled: false" 
     device-orientation-permission-ui="enabled: false">
+    
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-    <a-entity mindar-image-target="targetIndex: 0" id="target-1"></a-entity>
+    
+
   </a-scene>
 
   <script>
@@ -50,46 +75,33 @@
     const videoContainer = document.querySelector('#ar-video-container');
     const target1 = document.querySelector('#target-1');
     const sceneEl = document.querySelector('a-scene');
-    const logEl = document.querySelector('#debug-log');
-
-    function log(msg) {
-      logEl.innerHTML += "<br>• " + msg;
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    window.addEventListener('error', (e) => {
-      log("ERRO CRÍTICO: " + e.message);
-    });
 
     btn.addEventListener('click', () => {
-      log("Botão clicado. Inicializando câmara...");
       btn.style.display = 'none';
       
+      // Ativa e prepara o som do vídeo no clique do utilizador
       vid1.play().then(() => {
         vid1.pause();
         vid1.currentTime = 0;
-        log("Codecs de vídeo ativados.");
-      }).catch(err => log("Aviso de mídia: " + err.message));
+      }).catch(err => console.log("Áudio ativado"));
 
       setTimeout(() => {
-        try {
-          log("A tentar ler o ficheiro targets.mind...");
+        if (sceneEl.isPlaying) {
           sceneEl.systems["mindar-image-system"].start();
-          log("Motor MindAR iniciado. Se o ecrã continuar preto, substitua o ficheiro .mind.");
-        } catch (err) {
-          log("FALHA NO MINDAR: " + err.message);
+        } else {
+          sceneEl.addEventListener('render-start', () => {
+            sceneEl.systems["mindar-image-system"].start();
+          });
         }
-      }, 200);
+      }, 100);
     });
 
     target1.addEventListener("targetFound", () => {
-      log("Quadro DETETADO!");
       videoContainer.style.display = "block";
       vid1.play();
     });
 
     target1.addEventListener("targetLost", () => {
-      log("Quadro perdido.");
       vid1.pause();
       videoContainer.style.display = "none";
     });
