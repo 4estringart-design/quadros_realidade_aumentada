@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <title>Galeria RA - String Art</title>
   
-  <!-- Bibliotecas Estáveis (A-Frame 1.4.2 + MindAR 1.2.2) -->
-  <script src="https://aframe.io"></script>
+  <!-- A-Frame 1.4.2 e MindAR 1.2.2 Estáveis -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://jsdelivr.net"></script>
 
   <style>
@@ -31,12 +31,35 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       cursor: pointer;
     }
+    /* O vídeo agora é uma camada leve que flutua sobre a câmera */
+    #ar-video-container {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 85vw; /* Ocupa 85% da largura da tela */
+      z-index: 5000;
+      pointer-events: none;
+    }
+    #vid-quadro1 {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    }
   </style>
 </head>
 <body>
 
   <button id="start-btn">Toque para Iniciar Experiência</button>
 
+  <!-- Container do Vídeo fora do ambiente 3D para não pesar na RAM -->
+  <div id="ar-video-container">
+    <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
+  </div>
+
+  <!-- A cena agora só carrega o rastreamento, ficando infinitamente mais leve -->
   <a-scene 
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no;" 
     color-space="sRGB" 
@@ -44,16 +67,9 @@
     vr-mode-ui="enabled: false" 
     device-orientation-permission-ui="enabled: false">
     
-    <a-assets>
-      <!-- Vídeo configurado sem reprodução automática inicial -->
-      <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
-    </a-assets>
-
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- O plano começa TOTALMENTE invisível e sem tamanho no ecrã inicial -->
-    
-      <a-video id="render-video" src="#vid-quadro1" width="1.95" height="1.0" position="0 0 0" rotation="0 0 0" visible="false"></a-video>
+    <!-- Alvo de rastreamento vazio (usado apenas como gatilho) -->
     
 
   </a-scene>
@@ -61,24 +77,21 @@
   <script>
     const btn = document.querySelector('#start-btn');
     const vid1 = document.querySelector('#vid-quadro1');
+    const videoContainer = document.querySelector('#ar-video-container');
     const target1 = document.querySelector('#target-1');
-    const renderVideo = document.querySelector('#render-video');
     const sceneEl = document.querySelector('a-scene');
 
-    // Força o vídeo a nascer pausado
-    vid1.pause();
-
     btn.addEventListener('click', () => {
-      // 1. Desbloqueia o motor de mídia do telemóvel de forma silenciosa
+      // 1. Esconde o botão preto
+      btn.style.display = 'none';
+      
+      // 2. Destrava os codecs de vídeo do celular
       vid1.play().then(() => {
         vid1.pause();
         vid1.currentTime = 0;
-      }).catch(err => console.log("Mídia desbloqueada"));
-      
-      // 2. Esconde o botão preto
-      btn.style.display = 'none';
-      
-      // 3. Pequena pausa (100ms) para o telemóvel processar a ocultação do botão antes de ligar a câmara
+      }).catch(err => console.log("Codecs prontos"));
+
+      // 3. Inicializa a câmera sem risco de travamento
       setTimeout(() => {
         if (sceneEl.isPlaying) {
           sceneEl.systems["mindar-image-system"].start();
@@ -90,18 +103,17 @@
       }, 100);
     });
 
-    // EVENTOS DE RASTREAMENTO: O vídeo só aparece quando o quadro for detetado
+    // GATILHOS DE RASTREAMENTO REAIS
     target1.addEventListener("targetFound", () => {
-      console.log("Quadro detetado!");
-      renderVideo.setAttribute("visible", "true");
+      console.log("Quadro detectado com sucesso!");
+      videoContainer.style.display = "block"; // Mostra o vídeo na tela
       vid1.play();
     });
 
-    // O vídeo desaparece e pausa se o utilizador afastar a câmara do quadro
     target1.addEventListener("targetLost", () => {
-      console.log("Quadro perdido!");
+      console.log("Quadro perdido.");
       vid1.pause();
-      renderVideo.setAttribute("visible", "false");
+      videoContainer.style.display = "none"; // Esconde o vídeo imediatamente
     });
   </script>
 </body>
