@@ -3,74 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>Galeria RA - String Art</title>
-  
-  <!-- Bibliotecas Estáveis (A-Frame 1.4.2 + MindAR 1.2.2) -->
-  <script src="https://aframe.io"></script>
-  <script src="https://jsdelivr.net"></script>
-
+  <title>Diagnóstico Galeria RA</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
   <style>
-    body { 
-      margin: 0; 
-      overflow: hidden; 
-      background-color: #000;
-    }
+    body { margin: 0; overflow: hidden; background-color: #000; font-family: sans-serif; }
     #start-btn {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-      padding: 14px 28px;
-      font-size: 16px;
-      font-weight: bold;
-      background: #111;
-      color: #fff;
-      border: 2px solid #fff;
-      border-radius: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      cursor: pointer;
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999;
+      padding: 14px 28px; font-size: 16px; font-weight: bold; background: #111; color: #fff;
+      border: 2px solid #fff; border-radius: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer;
     }
-    /* Camada flutuante para o vídeo */
+    #debug-log {
+      position: absolute; top: 10px; left: 10px; right: 10px; max-height: 150px;
+      background: rgba(0,0,0,0.8); color: #00ff00; padding: 10px; font-size: 12px;
+      overflow-y: auto; z-index: 99999; border-radius: 5px; pointer-events: none;
+    }
     #ar-video-container {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 85vw;
-      z-index: 5000;
-      pointer-events: none;
+      display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 85vw; z-index: 5000; pointer-events: none;
     }
-    #vid-quadro1 {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-    }
+    #vid-quadro1 { width: 100%; height: auto; border-radius: 8px; }
   </style>
 </head>
 <body>
 
-  <button id="start-btn">Toque para Ativar o Áudio</button>
+  <div id="debug-log">Painel de Diagnóstico:<br>Aguardando clique...</div>
+  <button id="start-btn">Iniciar Teste de Câmara</button>
 
   <div id="ar-video-container">
     <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
   </div>
 
-  <!-- autoStart: true força a câmara a ligar nativamente no início -->
   <a-scene 
-    mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: yes;" 
+    mindar-image="imageTargetSrc: targets.mind; autoStart: false; uiLoading: no;" 
     color-space="sRGB" 
     renderer="colorManagement: true, physicallyCorrectLights: true" 
     vr-mode-ui="enabled: false" 
     device-orientation-permission-ui="enabled: false">
-    
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-    <!-- Alvo de rastreamento -->
-    
-
+    <a-entity mindar-image-target="targetIndex: 0" id="target-1"></a-entity>
   </a-scene>
 
   <script>
@@ -78,28 +49,47 @@
     const vid1 = document.querySelector('#vid-quadro1');
     const videoContainer = document.querySelector('#ar-video-container');
     const target1 = document.querySelector('#target-1');
+    const sceneEl = document.querySelector('a-scene');
+    const logEl = document.querySelector('#debug-log');
+
+    function log(msg) {
+      logEl.innerHTML += "<br>• " + msg;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    window.addEventListener('error', (e) => {
+      log("ERRO CRÍTICO: " + e.message);
+    });
 
     btn.addEventListener('click', () => {
-      // Esconde o botão preto
+      log("Botão clicado. Inicializando câmara...");
       btn.style.display = 'none';
       
-      // Destrava o áudio/vídeo do navegador
       vid1.play().then(() => {
         vid1.pause();
         vid1.currentTime = 0;
-      }).catch(err => console.log("Áudio libertado"));
+        log("Codecs de vídeo ativados.");
+      }).catch(err => log("Aviso de mídia: " + err.message));
+
+      setTimeout(() => {
+        try {
+          log("A tentar ler o ficheiro targets.mind...");
+          sceneEl.systems["mindar-image-system"].start();
+          log("Motor MindAR iniciado. Se o ecrã continuar preto, substitua o ficheiro .mind.");
+        } catch (err) {
+          log("FALHA NO MINDAR: " + err.message);
+        }
+      }, 200);
     });
 
-    // O vídeo SÓ aparece quando a câmara encontrar o quadro real
     target1.addEventListener("targetFound", () => {
-      console.log("Quadro detetado!");
+      log("Quadro DETETADO!");
       videoContainer.style.display = "block";
       vid1.play();
     });
 
-    // O vídeo desaparece se afastar o telemóvel do quadro
     target1.addEventListener("targetLost", () => {
-      console.log("Quadro perdido.");
+      log("Quadro perdido.");
       vid1.pause();
       videoContainer.style.display = "none";
     });
