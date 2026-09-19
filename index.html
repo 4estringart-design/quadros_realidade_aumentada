@@ -1,100 +1,87 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.5">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Galeria RA - String Art</title>
+  
+  <!-- A-Frame e MindAR -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+    }
+    #start-btn {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #111;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="pt-BR"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Galeria RA - String Art&lt;/title&gt;</p>
-<p class="p2"><span class="Apple-converted-space">  </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- A-Frame e MindAR --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://aframe.io/releases/1.5.0/aframe.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"&gt;&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body { margin: 0; overflow: hidden; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>#start-btn {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>bottom: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>left: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>transform: translateX(-50%);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>z-index: 9999;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding: 14px 28px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: #111;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: #fff;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border: 2px solid #fff;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 12px rgba(0,0,0,0.3);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button id="start-btn"&gt;Toque para Iniciar Experiência&lt;/button&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;a-scene<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>mindar-image="imageTargetSrc: ./targets.mind;"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>color-space="sRGB"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>renderer="colorManagement: true, physicallyCorrectLights"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>vr-mode-ui="enabled: false"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>device-orientation-permission-ui="enabled: false"&gt;</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a-assets&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- Mídia do Quadro 1 (String Art) --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;video id="vid-quadro1" src="./animacao1.mp4" preload="auto" loop webkit-playsinline playsinline crossorigin="anonymous"&gt;&lt;/video&gt;</p>
-<p class="p2"><span class="Apple-converted-space">      </span></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- [FUTURO] Você pode adicionar mais vídeos aqui quando cadastrar novas obras --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- &lt;video id="vid-quadro2" src="./animacao2.mp4" ...&gt;&lt;/video&gt; --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a-assets&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a-camera position="0 0 0" look-controls="enabled: false"&gt;&lt;/a-camera&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- ALVO 1: Seu quadro de String Art (targetIndex: 0) --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Ajuste o width/height de acordo com a proporção do seu quadro --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a-entity mindar-image-target="targetIndex: 0" id="target-1"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a-video src="#vid-quadro1" width="1.8" height="1" position="0 0 0" rotation="0 0 0"&gt;&lt;/a-video&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a-entity&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- [FUTURO] ALVO 2: Para quando você adicionar um segundo quadro na mesma exposição --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!--</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;a-entity mindar-image-target="targetIndex: 1" id="target-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;a-video src="#vid-quadro2" width="1.8" height="1" position="0 0 0"&gt;&lt;/a-video&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/a-entity&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/a-scene&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const btn = document.querySelector('#start-btn');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const vid1 = document.querySelector('#vid-quadro1');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const target1 = document.querySelector('#target-1');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Desbloqueia reprodução no celular</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>vid1.play(); vid1.pause();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Eventos do Quadro 1</p>
-<p class="p1"><span class="Apple-converted-space">    </span>target1.addEventListener("targetFound", () =&gt; vid1.play());</p>
-<p class="p1"><span class="Apple-converted-space">    </span>target1.addEventListener("targetLost", () =&gt; vid1.pause());</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+  <button id="start-btn">Toque para Iniciar Experiência</button>
+
+  <a-scene 
+    mindar-image="imageTargetSrc: ./targets.mind;" 
+    color-space="sRGB" 
+    renderer="colorManagement: true, physicallyCorrectLights" 
+    vr-mode-ui="enabled: false" 
+    device-orientation-permission-ui="enabled: false">
+    
+    <a-assets>
+      <!-- Mídia do Quadro 1 (String Art) -->
+      <video id="vid-quadro1" src="./animacao1.mp4" preload="auto" loop webkit-playsinline playsinline crossorigin="anonymous"></video>
+      
+      <!-- [FUTURO] Você pode adicionar mais vídeos aqui quando cadastrar novas obras -->
+      <!-- <video id="vid-quadro2" src="./animacao2.mp4" ...></video> -- -->
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- ALVO 1: Seu quadro de String Art (targetIndex: 0) -->
+    <!-- Ajuste o width/height de acordo com a proporção do seu quadro -->
+    
+      <a-video src="#vid-quadro1" width="1.8" height="1" position="0 0 0" rotation="0 0 0"></a-video>
+    
+
+    <!-- [FUTURO] ALVO 2: Para quando você adicionar um segundo quadro na mesma exposição -->
+    
+      <a-video src="#vid-quadro2" width="1.8" height="1" position="0 0 0"></a-video>
+    
+    -->
+
+  </a-scene>
+
+  <script>
+    const btn = document.querySelector('#start-btn');
+    const vid1 = document.querySelector('#vid-quadro1');
+    const target1 = document.querySelector('#target-1');
+
+    // Desbloqueia reprodução no celular e inicia áudio/vídeo após clique do usuário
+    btn.addEventListener('click', () => {
+      vid1.play(); 
+      vid1.pause();
+      btn.style.display = 'none';
+    });
+
+    // Eventos do Quadro 1
+    target1.addEventListener("targetFound", () => vid1.play());
+    target1.addEventListener("targetLost", () => vid1.pause());
+  </script>
 </body>
 </html>
