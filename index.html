@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <title>Galeria RA - String Art</title>
   
-  <!-- A-Frame e MindAR -->
+  <!-- Biblioteca Sincronizada Estável (A-Frame 1.4.2 + MindAR 1.2.2) -->
   <script src="https://aframe.io"></script>
   <script src="https://jsdelivr.net"></script>
 
@@ -37,21 +37,21 @@
 
   <button id="start-btn">Toque para Iniciar Experiência</button>
 
+  <!-- Removido o carregamento preguiçoso agressivo que causava o erro de renderização -->
   <a-scene 
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no;" 
     color-space="sRGB" 
-    renderer="colorManagement: true, physicallyCorrectLights" 
+    renderer="colorManagement: true, physicallyCorrectLights: true" 
     vr-mode-ui="enabled: false" 
     device-orientation-permission-ui="enabled: false">
     
     <a-assets>
-      <!-- O src começa vazio para o site carregar instantaneamente sem travar -->
-      <video id="vid-quadro1" src="" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
+      <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- O plano do vídeo começa invisível para garantir que não apareça antes da hora -->
+    <!-- O plano do vídeo começa invisível para não vazar no ecrã inicial -->
     
       <a-video id="render-video" src="#vid-quadro1" width="1.95" height="1.0" position="0 0 0" rotation="0 0 0" visible="false"></a-video>
     
@@ -66,29 +66,30 @@
     const sceneEl = document.querySelector('a-scene');
 
     btn.addEventListener('click', () => {
-      // 1. Injeta o arquivo do vídeo apenas após o clique (Carregamento rápido)
-      vid1.src = "./animacao1.mp4";
-      vid1.load();
-
-      // 2. Libera o motor de mídia e esconde o botão
+      // Libera e limpa o estado do vídeo no clique do utilizador
       vid1.play().then(() => {
         vid1.pause();
         vid1.currentTime = 0;
-      }).catch(err => console.log("Áudio liberado"));
+      }).catch(err => console.log("Áudio ativado"));
       
       btn.style.display = 'none';
       
-      // 3. Inicializa o MindAR e ativa a câmera
-      sceneEl.systems["mindar-image-system"].start(); 
+      // Força a inicialização segura dos sistemas da câmara
+      if (sceneEl.isPlaying) {
+        sceneEl.systems["mindar-image-system"].start();
+      } else {
+        sceneEl.addEventListener('render-start', () => {
+          sceneEl.systems["mindar-image-system"].start();
+        });
+      }
     });
 
-    // O vídeo SÓ ganha visibilidade e dá PLAY quando o quadro for rastreado
+    // Eventos estritos de deteção do quadro real de 82x42cm
     target1.addEventListener("targetFound", () => {
       renderVideo.setAttribute("visible", "true");
       vid1.play();
     });
 
-    // O vídeo some e pausa imediatamente se o usuário afastar o celular
     target1.addEventListener("targetLost", () => {
       vid1.pause();
       renderVideo.setAttribute("visible", "false");
