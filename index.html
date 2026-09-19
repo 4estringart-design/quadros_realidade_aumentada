@@ -13,6 +13,7 @@
     body { 
       margin: 0; 
       overflow: hidden; 
+      background-color: #000;
     }
     #start-btn {
       position: absolute;
@@ -37,22 +38,22 @@
   <button id="start-btn">Toque para Iniciar Experiência</button>
 
   <a-scene 
-    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: yes;" 
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no;" 
     color-space="sRGB" 
     renderer="colorManagement: true, physicallyCorrectLights" 
     vr-mode-ui="enabled: false" 
     device-orientation-permission-ui="enabled: false">
     
     <a-assets>
-      <!-- O atributo autoplay foi removido e adicionamos o pause estrito no carregamento -->
-      <video id="vid-quadro1" src="./animacao1.mp4" preload="auto" loop webkit-playsinline playsinline crossorigin="anonymous"></video>
+      <!-- O src começa vazio para o site carregar instantaneamente sem travar -->
+      <video id="vid-quadro1" src="" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ALVO 1: Ajustado para 82cm x 42cm -->
+    <!-- O plano do vídeo começa invisível para garantir que não apareça antes da hora -->
     
-      <a-video src="#vid-quadro1" width="1.95" height="1.0" position="0 0 0" rotation="0 0 0"></a-video>
+      <a-video id="render-video" src="#vid-quadro1" width="1.95" height="1.0" position="0 0 0" rotation="0 0 0" visible="false"></a-video>
     
 
   </a-scene>
@@ -61,34 +62,36 @@
     const btn = document.querySelector('#start-btn');
     const vid1 = document.querySelector('#vid-quadro1');
     const target1 = document.querySelector('#target-1');
+    const renderVideo = document.querySelector('#render-video');
     const sceneEl = document.querySelector('a-scene');
 
-    // Garante que o vídeo começa pausado e escondido no início
-    vid1.pause();
-
     btn.addEventListener('click', () => {
-      // 1. Libera o áudio tocando e pausando imediatamente numa fração de segundo
+      // 1. Injeta o arquivo do vídeo apenas após o clique (Carregamento rápido)
+      vid1.src = "./animacao1.mp4";
+      vid1.load();
+
+      // 2. Libera o motor de mídia e esconde o botão
       vid1.play().then(() => {
         vid1.pause();
-        vid1.currentTime = 0; // Reinicia o vídeo para o início
+        vid1.currentTime = 0;
       }).catch(err => console.log("Áudio liberado"));
       
-      // 2. Esconde o botão da tela
       btn.style.display = 'none';
       
-      // 3. Inicia a câmara com segurança
+      // 3. Inicializa o MindAR e ativa a câmera
       sceneEl.systems["mindar-image-system"].start(); 
     });
 
-    // EVENTOS REAIS DE RASTREAMENTO: O vídeo só roda se houver "targetFound"
+    // O vídeo SÓ ganha visibilidade e dá PLAY quando o quadro for rastreado
     target1.addEventListener("targetFound", () => {
-      console.log("Quadro detectado!");
+      renderVideo.setAttribute("visible", "true");
       vid1.play();
     });
 
+    // O vídeo some e pausa imediatamente se o usuário afastar o celular
     target1.addEventListener("targetLost", () => {
-      console.log("Quadro perdido!");
       vid1.pause();
+      renderVideo.setAttribute("visible", "false");
     });
   </script>
 </body>
