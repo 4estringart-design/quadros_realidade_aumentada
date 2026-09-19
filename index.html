@@ -36,21 +36,20 @@
 
   <button id="start-btn">Toque para Iniciar Experiência</button>
 
+  <!-- uiLoading: yes mostra uma barra azul de carregamento nativa muito útil -->
   <a-scene 
-    mindar-image="imageTargetSrc: ./targets.mind;" 
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: yes;" 
     color-space="sRGB" 
     renderer="colorManagement: true, physicallyCorrectLights" 
     vr-mode-ui="enabled: false" 
     device-orientation-permission-ui="enabled: false">
     
     <a-assets>
-      <!-- Mídia do Quadro 1 (String Art) -->
       <video id="vid-quadro1" src="./animacao1.mp4" preload="auto" loop webkit-playsinline playsinline crossorigin="anonymous"></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ALVO 1: Ajustado para as medidas exatas de 82cm x 42cm (Proporção 1.95) -->
     
       <a-video src="#vid-quadro1" width="1.95" height="1.0" position="0 0 0" rotation="0 0 0"></a-video>
     
@@ -61,11 +60,19 @@
     const btn = document.querySelector('#start-btn');
     const vid1 = document.querySelector('#vid-quadro1');
     const target1 = document.querySelector('#target-1');
+    const sceneEl = document.querySelector('a-scene');
 
     btn.addEventListener('click', () => {
-      vid1.play(); 
-      vid1.pause();
+      // 1. Libera o motor de áudio e vídeo do celular
+      vid1.play().then(() => {
+        vid1.pause();
+      }).catch(err => console.log("Áudio liberado"));
+      
+      // 2. Esconde o botão da tela
       btn.style.display = 'none';
+      
+      // 3. Liga a câmera e o MindAR de forma segura
+      sceneEl.systems["mindar-image-system"].start(); 
     });
 
     // Controlos de reprodução ao detetar o quadro
