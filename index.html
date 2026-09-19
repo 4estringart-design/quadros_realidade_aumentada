@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <title>Galeria RA - String Art</title>
   
-  <!-- A-Frame 1.4.2 e MindAR 1.2.2 Estáveis -->
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <!-- Bibliotecas Estáveis (A-Frame 1.4.2 + MindAR 1.2.2) -->
+  <script src="https://aframe.io"></script>
   <script src="https://jsdelivr.net"></script>
 
   <style>
@@ -31,14 +31,14 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       cursor: pointer;
     }
-    /* O vídeo agora é uma camada leve que flutua sobre a câmera */
+    /* Camada flutuante para o vídeo */
     #ar-video-container {
       display: none;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 85vw; /* Ocupa 85% da largura da tela */
+      width: 85vw;
       z-index: 5000;
       pointer-events: none;
     }
@@ -52,16 +52,15 @@
 </head>
 <body>
 
-  <button id="start-btn">Toque para Iniciar Experiência</button>
+  <button id="start-btn">Toque para Ativar o Áudio</button>
 
-  <!-- Container do Vídeo fora do ambiente 3D para não pesar na RAM -->
   <div id="ar-video-container">
     <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
   </div>
 
-  <!-- A cena agora só carrega o rastreamento, ficando infinitamente mais leve -->
+  <!-- autoStart: true força a câmara a ligar nativamente no início -->
   <a-scene 
-    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no;" 
+    mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: yes;" 
     color-space="sRGB" 
     renderer="colorManagement: true, physicallyCorrectLights: true" 
     vr-mode-ui="enabled: false" 
@@ -69,7 +68,7 @@
     
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Alvo de rastreamento vazio (usado apenas como gatilho) -->
+    <!-- Alvo de rastreamento -->
     
 
   </a-scene>
@@ -79,41 +78,30 @@
     const vid1 = document.querySelector('#vid-quadro1');
     const videoContainer = document.querySelector('#ar-video-container');
     const target1 = document.querySelector('#target-1');
-    const sceneEl = document.querySelector('a-scene');
 
     btn.addEventListener('click', () => {
-      // 1. Esconde o botão preto
+      // Esconde o botão preto
       btn.style.display = 'none';
       
-      // 2. Destrava os codecs de vídeo do celular
+      // Destrava o áudio/vídeo do navegador
       vid1.play().then(() => {
         vid1.pause();
         vid1.currentTime = 0;
-      }).catch(err => console.log("Codecs prontos"));
-
-      // 3. Inicializa a câmera sem risco de travamento
-      setTimeout(() => {
-        if (sceneEl.isPlaying) {
-          sceneEl.systems["mindar-image-system"].start();
-        } else {
-          sceneEl.addEventListener('render-start', () => {
-            sceneEl.systems["mindar-image-system"].start();
-          });
-        }
-      }, 100);
+      }).catch(err => console.log("Áudio libertado"));
     });
 
-    // GATILHOS DE RASTREAMENTO REAIS
+    // O vídeo SÓ aparece quando a câmara encontrar o quadro real
     target1.addEventListener("targetFound", () => {
-      console.log("Quadro detectado com sucesso!");
-      videoContainer.style.display = "block"; // Mostra o vídeo na tela
+      console.log("Quadro detetado!");
+      videoContainer.style.display = "block";
       vid1.play();
     });
 
+    // O vídeo desaparece se afastar o telemóvel do quadro
     target1.addEventListener("targetLost", () => {
       console.log("Quadro perdido.");
       vid1.pause();
-      videoContainer.style.display = "none"; // Esconde o vídeo imediatamente
+      videoContainer.style.display = "none";
     });
   </script>
 </body>
