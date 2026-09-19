@@ -6,8 +6,8 @@
   <title>Galeria RA - String Art</title>
   
   <!-- A-Frame e MindAR -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://aframe.io"></script>
+  <script src="https://jsdelivr.net"></script>
 
   <style>
     body { 
@@ -46,24 +46,14 @@
     <a-assets>
       <!-- Mídia do Quadro 1 (String Art) -->
       <video id="vid-quadro1" src="./animacao1.mp4" preload="auto" loop webkit-playsinline playsinline crossorigin="anonymous"></video>
-      
-      <!-- [FUTURO] Você pode adicionar mais vídeos aqui quando cadastrar novas obras -->
-      <!-- <video id="vid-quadro2" src="./animacao2.mp4" ...></video> -- -->
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- ALVO 1: Seu quadro de String Art (targetIndex: 0) -->
-    <!-- Ajuste o width/height de acordo com a proporção do seu quadro -->
+    <!-- ALVO 1: Ajustado para as medidas exatas de 82cm x 42cm (Proporção 1.95) -->
     
-      <a-video src="#vid-quadro1" width="1.8" height="1" position="0 0 0" rotation="0 0 0"></a-video>
+      <a-video src="#vid-quadro1" width="1.95" height="1.0" position="0 0 0" rotation="0 0 0"></a-video>
     
-
-    <!-- [FUTURO] ALVO 2: Para quando você adicionar um segundo quadro na mesma exposição -->
-    
-      <a-video src="#vid-quadro2" width="1.8" height="1" position="0 0 0"></a-video>
-    
-    -->
 
   </a-scene>
 
@@ -72,16 +62,16 @@
     const vid1 = document.querySelector('#vid-quadro1');
     const target1 = document.querySelector('#target-1');
 
-    // Desbloqueia reprodução no celular e inicia áudio/vídeo após clique do usuário
     btn.addEventListener('click', () => {
       vid1.play(); 
       vid1.pause();
       btn.style.display = 'none';
     });
 
-    // Eventos do Quadro 1
+    // Controlos de reprodução ao detetar o quadro
     target1.addEventListener("targetFound", () => vid1.play());
     target1.addEventListener("targetLost", () => vid1.pause());
   </script>
 </body>
 </html>
+
