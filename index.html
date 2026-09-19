@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <title>Galeria RA - String Art</title>
   
-  <!-- Biblioteca Sincronizada Estável (A-Frame 1.4.2 + MindAR 1.2.2) -->
+  <!-- Bibliotecas Estáveis (A-Frame 1.4.2 + MindAR 1.2.2) -->
   <script src="https://aframe.io"></script>
   <script src="https://jsdelivr.net"></script>
 
@@ -37,7 +37,6 @@
 
   <button id="start-btn">Toque para Iniciar Experiência</button>
 
-  <!-- Removido o carregamento preguiçoso agressivo que causava o erro de renderização -->
   <a-scene 
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no;" 
     color-space="sRGB" 
@@ -46,12 +45,13 @@
     device-orientation-permission-ui="enabled: false">
     
     <a-assets>
+      <!-- Vídeo configurado sem reprodução automática inicial -->
       <video id="vid-quadro1" src="./animacao1.mp4" loop webkit-playsinline playsinline crossorigin="anonymous" muted></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- O plano do vídeo começa invisível para não vazar no ecrã inicial -->
+    <!-- O plano começa TOTALMENTE invisível e sem tamanho no ecrã inicial -->
     
       <a-video id="render-video" src="#vid-quadro1" width="1.95" height="1.0" position="0 0 0" rotation="0 0 0" visible="false"></a-video>
     
@@ -65,32 +65,41 @@
     const renderVideo = document.querySelector('#render-video');
     const sceneEl = document.querySelector('a-scene');
 
+    // Força o vídeo a nascer pausado
+    vid1.pause();
+
     btn.addEventListener('click', () => {
-      // Libera e limpa o estado do vídeo no clique do utilizador
+      // 1. Desbloqueia o motor de mídia do telemóvel de forma silenciosa
       vid1.play().then(() => {
         vid1.pause();
         vid1.currentTime = 0;
-      }).catch(err => console.log("Áudio ativado"));
+      }).catch(err => console.log("Mídia desbloqueada"));
       
+      // 2. Esconde o botão preto
       btn.style.display = 'none';
       
-      // Força a inicialização segura dos sistemas da câmara
-      if (sceneEl.isPlaying) {
-        sceneEl.systems["mindar-image-system"].start();
-      } else {
-        sceneEl.addEventListener('render-start', () => {
+      // 3. Pequena pausa (100ms) para o telemóvel processar a ocultação do botão antes de ligar a câmara
+      setTimeout(() => {
+        if (sceneEl.isPlaying) {
           sceneEl.systems["mindar-image-system"].start();
-        });
-      }
+        } else {
+          sceneEl.addEventListener('render-start', () => {
+            sceneEl.systems["mindar-image-system"].start();
+          });
+        }
+      }, 100);
     });
 
-    // Eventos estritos de deteção do quadro real de 82x42cm
+    // EVENTOS DE RASTREAMENTO: O vídeo só aparece quando o quadro for detetado
     target1.addEventListener("targetFound", () => {
+      console.log("Quadro detetado!");
       renderVideo.setAttribute("visible", "true");
       vid1.play();
     });
 
+    // O vídeo desaparece e pausa se o utilizador afastar a câmara do quadro
     target1.addEventListener("targetLost", () => {
+      console.log("Quadro perdido!");
       vid1.pause();
       renderVideo.setAttribute("visible", "false");
     });
